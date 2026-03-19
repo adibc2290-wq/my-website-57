@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultra Pro Interactive Website</title>
+<style>
+body { margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior:smooth; overflow-x:hidden; background:#f7f8fa; }
+.navbar { display:flex; align-items:center; justify-content:center; background: linear-gradient(to right,#0f2027,#203a43,#2c5364); height:70px; position:fixed; width:100%; top:0; z-index:1000; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+.logo { position:absolute; left:25px; color:white; font-size:24px; font-weight:bold; }
+.nav-links { display:flex; gap:15px; }
+.nav-links a { color:white; text-decoration:none; padding:15px 18px; font-weight:500; border-radius:5px; transition:0.3s; }
+.nav-links a:hover { background-color: rgba(255,255,255,0.2); }
+.menu-btn { position:absolute; right:25px; color:white; font-size:26px; cursor:pointer; }
+.sidebar { position: fixed; top:0; right:-320px; width:320px; height:100%; background: linear-gradient(to bottom,#0f2027,#203a43,#2c5364); padding-top:80px; transition:0.5s; z-index:1001; box-shadow:-3px 0 15px rgba(0,0,0,0.3); }
+.sidebar.active { right:0; }
+.sidebar a { display:block; color:white; padding:16px 30px; text-decoration:none; font-size:18px; transition:0.3s; }
+.sidebar a:hover { background-color: rgba(255,255,255,0.2); border-radius:5px; }
+.overlay { position: fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.4); display:none; z-index:1000; }
+.overlay.active { display:block; }
+
+.hero { position: relative; height: 100vh; overflow:hidden; text-align:center; color:white; }
+.hero-layer { position:absolute; top:0; left:0; width:110%; height:110%; background-repeat:no-repeat; background-position:center; background-size:cover; transform:translateZ(0); will-change: transform; }
+.hero-bg1 { background-image:url('https://picsum.photos/1920/1080?2'); z-index:-3; opacity:0.7; }
+.hero-bg2 { background-image:url('https://picsum.photos/1920/1080?3'); z-index:-2; opacity:0.5; }
+.hero-bg3 { background-image:url('https://picsum.photos/1920/1080?4'); z-index:-1; opacity:0.3; }
+
+/* SVG Particle Canvas */
+#particleCanvas { position:absolute; top:0; left:0; width:100%; height:100%; z-index:-4; pointer-events:none; }
+
+.hero-content { position: relative; top:50%; transform:translateY(-50%); z-index:1; padding:0 20px; }
+.hero-content h1 { font-size:56px; margin-bottom:20px; transition:0.5s; }
+.hero-content p { font-size:20px; margin-bottom:30px; transition:0.5s; }
+.hero-content a { padding:14px 30px; background: gold; color:black; text-decoration:none; font-weight:bold; border-radius:6px; transition:0.3s; }
+.hero-content a:hover { background:white; color:#203a43; }
+
+.section { padding:80px 50px; text-align:center; opacity:0; transform:translateY(50px); transition:1s ease; }
+.section.active { opacity:1; transform:translateY(0); }
+.section-title { font-size:32px; margin-bottom:40px; color:#203a43; position:relative; }
+.section-title::after { content:''; display:block; width:80px; height:4px; background-color: gold; margin:10px auto 0; border-radius:2px; }
+
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:30px; }
+.card { background:white; padding:25px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.1); transition:0.3s; }
+.card:hover { transform:translateY(-8px) scale(1.02); }
+.card h3 { margin-top:0; color:#203a43; }
+.card p { color:#555; }
+.gallery img { width:100%; height:240px; object-fit:cover; border-radius:10px; transition:0.3s; }
+.gallery img:hover { transform:scale(1.05); }
+
+.stats { display:flex; justify-content:space-around; flex-wrap:wrap; margin-top:40px; }
+.stat { flex:1; min-width:150px; margin:20px; background:#203a43; color:white; padding:30px; border-radius:10px; transition:0.3s; }
+.stat h2 { font-size:36px; margin:0; }
+.stat p { margin:5px 0 0 0; font-weight:bold; }
+
+.cta { background: linear-gradient(to right,#203a43,#2c5364); color:white; padding:80px 20px; text-align:center; }
+.cta a { background:gold; color:black; padding:15px 35px; text-decoration:none; font-weight:bold; border-radius:6px; transition:0.3s; }
+.cta a:hover { background:white; color:#203a43; }
+
+.footer { background:#203a43; color:white; padding:50px; text-align:center; }
+
+input, textarea { width:100%; padding:12px; margin:10px 0; border-radius:6px; border:1px solid #ccc; }
+button { padding:12px 25px; background-color:#203a43; color:white; border:none; border-radius:6px; cursor:pointer; transition:0.3s; }
+button:hover { background-color: gold; color:black; }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo">ULTRA PRO</div>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="menu-btn" onclick="openSidebar()">☰</div>
+</div>
+
+<div id="sidebar" class="sidebar">
+  <a href="#services">Services</a>
+  <a href="#portfolio">Portfolio</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#team">Team</a>
+  <a href="#contact">Contact</a>
+  <a href="javascript:void(0)" onclick="closeSidebar()">Close ×</a>
+</div>
+<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+<div class="hero">
+  <canvas id="particleCanvas"></canvas>
+  <div class="hero-layer hero-bg1"></div>
+  <div class="hero-layer hero-bg2"></div>
+  <div class="hero-layer hero-bg3"></div>
+  <div class="hero-content">
+    <h1>Ultra Pro Interactive Website</h1>
+    <p>Scroll and move your mouse to see parallax animations with networked particles.</p>
+    <a href="#services">Get Started</a>
+  </div>
+</div>
+
+<div id="services" class="section">
+  <div class="section-title">Services</div>
+  <div class="grid">
+    <div class="card"><h3>UI/UX Design</h3><p>Lorem ipsum dolor sit amet.</p></div>
+    <div class="card"><h3>Web Development</h3><p>Lorem ipsum dolor sit amet.</p></div>
+    <div class="card"><h3>Marketing</h3><p>Lorem ipsum dolor sit amet.</p></div>
+    <div class="card"><h3>SEO Optimization</h3><p>Lorem ipsum dolor sit amet.</p></div>
+  </div>
+</div>
+
+<div id="portfolio" class="section">
+  <div class="section-title">Portfolio</div>
+  <div class="grid gallery">
+    <img src="https://picsum.photos/400/300?1">
+    <img src="https://picsum.photos/400/300?2">
+    <img src="https://picsum.photos/400/300?3">
+    <img src="https://picsum.photos/400/300?4">
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Stats</div>
+  <div class="stats">
+    <div class="stat"><h2 class="counter" data-target="250">0</h2><p>Projects</p></div>
+    <div class="stat"><h2 class="counter" data-target="150">0</h2><p>Clients</p></div>
+    <div class="stat"><h2 class="counter" data-target="50">0</h2><p>Awards</p></div>
+    <div class="stat"><h2 class="counter" data-target="10">0</h2><p>Years</p></div>
+  </div>
+</div>
+
+<div class="cta">
+  <h2>Ready to take your business to the next level?</h2>
+  <a href="#contact">Contact Us</a>
+</div>
+
+<div id="contact" class="section">
+  <div class="section-title">Contact Us</div>
+  <input placeholder="Your Name">
+  <input placeholder="Your Email">
+  <textarea placeholder="Your Message"></textarea>
+  <button>Send Message</button>
+</div>
+
+<div class="footer">
+  <p>© 2026 Ultra Pro Premium Website</p>
+</div>
+
+<script>
+// Sidebar
+function openSidebar() { document.getElementById("sidebar").classList.add("active"); document.getElementById("overlay").classList.add("active"); }
+function closeSidebar() { document.getElementById("sidebar").classList.remove("active"); document.getElementById("overlay").classList.remove("active"); }
+
+// Hero parallax scroll
+const hero1 = document.querySelector('.hero-bg1');
+const hero2 = document.querySelector('.hero-bg2');
+const hero3 = document.querySelector('.hero-bg3');
+window.addEventListener('scroll', () => {
+  const top = window.pageYOffset;
+  hero1.style.transform = `translateY(${top*0.3}px)`;
+  hero2.style.transform = `translateY(${top*0.5}px)`;
+  hero3.style.transform = `translateY(${top*0.8}px)`;
+});
+
+// Hero mouse move parallax
+document.addEventListener('mousemove', (e)=>{
+  const x = (e.clientX/window.innerWidth -0.5)*30;
+  const y = (e.clientY/window.innerHeight -0.5)*30;
+  hero1.style.transform += ` translateX(${x}px) translateY(${y}px)`;
+  hero2.style.transform += ` translateX(${x/2}px) translateY(${y/2}px)`;
+  hero3.style.transform += ` translateX(${x/3}px) translateY(${y/3}px)`;
+});
+
+// Scroll-trigger animations
+const sections = document.querySelectorAll('.section');
+window.addEventListener('scroll', () => {
+  const trigger = window.innerHeight*0.8;
+  sections.forEach(section => {
+    const top = section.getBoundingClientRect().top;
+    if(top < trigger) section.classList.add('active');
+  });
+});
+
+// Counter animation
+const counters = document.querySelectorAll('.counter');
+counters.forEach(counter => {
+  const update = () => {
+    const target = +counter.getAttribute('data-target');
+    const count = +counter.innerText;
+    const increment = target/200;
+    if(count<target){ counter.innerText = Math.ceil(count+increment); requestAnimationFrame(update); } 
+    else { counter.innerText = target; }
+  };
+  update();
+});
+
+// Particle network
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
+window.addEventListener('resize',()=>{ width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
+
+const particleCount = 80;
+const particles = [];
+for(let i=0;i<particleCount;i++){
+  particles.push({
+    x:Math.random()*width,
+    y:Math.random()*height,
+    vx:(Math.random()-0.5)*0.5,
+    vy:(Math.random()-0.5)*0.5
+  });
+}
+
+const mouse = {x:null,y:null};
+document.addEventListener('mousemove',(e)=>{ mouse.x=e.clientX; mouse.y=e.clientY; });
+
+function animateParticles(){
+  ctx.clearRect(0,0,width,height);
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0||p.x>width)p.vx*=-1;
+    if(p.y<0||p.y>height)p.vy*=-1;
+    ctx.fillStyle='white'; ctx.beginPath(); ctx.arc(p.x,p.y,2,0,Math.PI*2); ctx.fill();
+  });
+  // Draw lines
+  for(let i=0;i<particleCount;i++){
+    for(let j=i+1;j<particleCount;j++){
+      let dx=particles[i].x-particles[j].x;
+      let dy=particles[i].y-particles[j].y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.strokeStyle='rgba(255,255,255,'+(1-dist/120)+')';
+        ctx.lineWidth=1;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.stroke();
+      }
+    }
+    // Connect to mouse
+    if(mouse.x!==null && mouse.y!==null){
+      let dx=particles[i].x-mouse.x;
+      let dy=particles[i].y-mouse.y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.strokeStyle='rgba(255,255,255,'+(1-dist/120)+')';
+        ctx.lineWidth=1;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(mouse.x,mouse.y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+</script>
+</body>
+</html>
